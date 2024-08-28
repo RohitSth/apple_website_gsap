@@ -1,6 +1,6 @@
 "use client";
 
-import React, { SyntheticEvent, useEffect, useRef, useState } from "react";
+import { SyntheticEvent, useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -44,12 +44,14 @@ const VideoCarousel: React.FC = () => {
   const { isEnd, isLastVideo, startPlay, videoId, isPlaying } = video;
 
   useGSAP(() => {
+    // slider animation to move the video out of the screen and bring the next video in
     gsap.to("#slider", {
       transform: `translateX(${-100 * videoId}%)`,
       duration: 2,
       ease: "power2.inOut",
     });
 
+    // video animation to play the video when it is in the view
     gsap.to("#video", {
       scrollTrigger: {
         trigger: "#video",
@@ -70,22 +72,26 @@ const VideoCarousel: React.FC = () => {
     let span = videoSpanRef.current;
 
     if (span[videoId]) {
+      // animation to move the indicator of the video progress
       let anim = gsap.to(span[videoId], {
         onUpdate: () => {
+          // get the progress of the video
           const progress = Math.ceil(anim.progress() * 100);
 
           if (progress != currentProgress) {
             currentProgress = progress;
 
+            // set the width of the progress bar
             gsap.to(videoDivRef.current[videoId], {
               width:
                 window.innerWidth < 760
-                  ? "10vw"
+                  ? "10vw" // mobile
                   : window.innerWidth < 1200
-                  ? "10vw"
-                  : "4vw",
+                  ? "10vw" // tablet
+                  : "4vw", // desktop
             });
 
+            // set the background color of the progress bar
             gsap.to(span[videoId], {
               width: `${currentProgress}%`,
               backgroundColor: "white",
@@ -93,6 +99,7 @@ const VideoCarousel: React.FC = () => {
           }
         },
 
+        // when the video is ended, replace the progress bar with the indicator and change the background color
         onComplete: () => {
           if (isPlaying) {
             gsap.to(videoDivRef.current[videoId], {
@@ -109,6 +116,7 @@ const VideoCarousel: React.FC = () => {
         anim.restart();
       }
 
+      // update the progress bar
       const animUpdate = () => {
         anim.progress(
           videoRef.current[videoId].currentTime /
@@ -117,8 +125,10 @@ const VideoCarousel: React.FC = () => {
       };
 
       if (isPlaying) {
+        // ticker to update the progress bar
         gsap.ticker.add(animUpdate);
       } else {
+        // remove the ticker when the video is paused (progress bar is stopped)
         gsap.ticker.remove(animUpdate);
       }
     }
@@ -134,6 +144,7 @@ const VideoCarousel: React.FC = () => {
     }
   }, [startPlay, videoId, isPlaying, loadedData]);
 
+  // vd id is the id for every video until id becomes number 3
   const handleProcess = (type: string, i?: number) => {
     switch (type) {
       case "video-end":
@@ -148,13 +159,16 @@ const VideoCarousel: React.FC = () => {
         setVideo((prev) => ({ ...prev, videoId: 0, isLastVideo: false }));
         break;
 
-      case "pause":
       case "play":
         setVideo((prev) => ({ ...prev, isPlaying: !prev.isPlaying }));
         break;
 
+      case "pause":
+        setVideo((prev) => ({ ...prev, isPlaying: !prev.isPlaying }));
+        break;
+
       default:
-        return;
+        return video;
     }
   };
 
@@ -227,17 +241,19 @@ const VideoCarousel: React.FC = () => {
           ))}
         </div>
 
-        <button className="control-btn">
+        <button
+          className="control-btn"
+          onClick={
+            isLastVideo
+              ? () => handleProcess("video-reset")
+              : !isPlaying
+              ? () => handleProcess("play")
+              : () => handleProcess("pause")
+          }
+        >
           <Image
             src={isLastVideo ? replayImg : !isPlaying ? playImg : pauseImg}
             alt={isLastVideo ? "replay" : !isPlaying ? "play" : "pause"}
-            onClick={
-              isLastVideo
-                ? () => handleProcess("video-reset")
-                : !isPlaying
-                ? () => handleProcess("play")
-                : () => handleProcess("pause")
-            }
             height={20}
             width={20}
           />
