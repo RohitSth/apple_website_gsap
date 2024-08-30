@@ -1,6 +1,7 @@
-import Hero from "@/components/Hero";
-import Highlights from "@/components/Highlights";
-import Navbar from "@/components/Navbar";
+import Hero from "./Hero";
+import Highlights from "./Highlights";
+import Navbar from "./Navbar";
+import Model from "./Model";
 
 export default function HomePage() {
   return (
@@ -8,6 +9,7 @@ export default function HomePage() {
       <Navbar />
       <Hero />
       <Highlights />
+      <Model />
     </main>
   );
 }
