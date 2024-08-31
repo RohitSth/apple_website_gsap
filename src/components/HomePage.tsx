@@ -3,8 +3,9 @@ import Highlights from "./Highlights";
 import Navbar from "./Navbar";
 import Model from "./Model";
 import HowItWorks from "./HowItWorks";
+import Footer from "./Footer";
 
-export default function HomePage() {
+const HomePage = () => {
   return (
     <main className="bg-black">
       <Navbar />
@@ -12,6 +13,9 @@ export default function HomePage() {
       <Highlights />
       <Model />
       <HowItWorks />
+      <Footer />
     </main>
   );
-}
+};
+
+export default HomePage;

@@ -8,9 +8,7 @@ import * as THREE from "three";
 import { Canvas } from "@react-three/fiber";
 import { View } from "@react-three/drei";
 import { models, sizes } from "@/constants";
-import dynamic from "next/dynamic";
-
-const ModelView = dynamic(() => import("./ModelView"), { ssr: false });
+import ModelView from "./ModelView";
 
 const Model = () => {
   const [size, setSize] = useState("small");
@@ -20,54 +18,49 @@ const Model = () => {
     img: yellowImg,
   });
 
-  // Refs for both model groups (small and large)
   const smallModelRef = useRef(new THREE.Group());
   const largeModelRef = useRef(new THREE.Group());
-
-  // Ref for the camera
   const cameraRef = useRef();
-
-  // State for tracking rotation
   const [rotation, setRotation] = useState(0);
 
-  // GSAP timeline
-  const tl = useRef(gsap.timeline());
+  const tl = useRef();
 
-  // Animation on size change
-  useEffect(() => {
-    // Set initial positions for the models
-    const smallModel = smallModelRef.current;
-    const largeModel = largeModelRef.current;
-    smallModel.position.x = -2;
-    largeModel.position.x = 2;
+  useGSAP(() => {
+    tl.current = gsap.timeline({ paused: true });
 
-    tl.current.clear();
     tl.current
-      // Slide small model out
-      .to(smallModel.position, {
+      .to(smallModelRef.current.position, {
         x: -5,
         duration: 0.5,
         ease: "power2.inOut",
       })
-      // Slide large model in
-      .to(largeModel.position, {
-        x: 0,
-        duration: 0.5,
-        ease: "power2.inOut",
-      })
-      // Slide small model back in
-      .to(smallModel.position, {
+      .to(
+        largeModelRef.current.position,
+        {
+          x: 0,
+          duration: 0.5,
+          ease: "power2.inOut",
+        },
+        "<"
+      )
+      .to(smallModelRef.current.position, {
         x: -2,
         duration: 0.5,
         ease: "power2.inOut",
-      })
-      .set(smallModel.position, { x: -2 });
-  }, [size]);
+      });
 
-  // GSAP animation for heading
-  useGSAP(() => {
     gsap.to("#heading", { y: 0, opacity: 1 });
   }, []);
+
+  useEffect(() => {
+    if (tl.current) {
+      if (size === "large") {
+        tl.current.play();
+      } else {
+        tl.current.reverse();
+      }
+    }
+  }, [size]);
 
   return (
     <section className="common-padding">
@@ -88,7 +81,6 @@ const Model = () => {
               eventPrefix="client"
             >
               <View.Port />
-              {/* Pass both model refs and rotation state to ModelView */}
               <ModelView
                 smallGroupRef={smallModelRef}
                 largeGroupRef={largeModelRef}
