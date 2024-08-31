@@ -21,6 +21,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/utils/index.js", "custom.d.ts", "src/components/IPhone.jsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "src/utils/index.js", "custom.d.ts", "src/components/IPhone.jsx", "src/components/ModelView.jsx", "src/components/Model.jsx"],
   "exclude": ["node_modules"]
 }

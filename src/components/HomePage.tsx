@@ -2,6 +2,7 @@ import Hero from "./Hero";
 import Highlights from "./Highlights";
 import Navbar from "./Navbar";
 import Model from "./Model";
+import HowItWorks from "./HowItWorks";
 
 export default function HomePage() {
   return (
@@ -10,6 +11,7 @@ export default function HomePage() {
       <Hero />
       <Highlights />
       <Model />
+      <HowItWorks />
     </main>
   );
 }
